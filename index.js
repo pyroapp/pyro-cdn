@@ -38,6 +38,6 @@ app.post('/upload', async (req, res) => {
   }
 });
 
-app.listen(9001, () => {
-  console.log('app now listening for requests!!!')
+app.listen(80, () => {
+  console.log('Uploader listning on port 80')
 });

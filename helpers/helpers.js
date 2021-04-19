@@ -20,7 +20,6 @@ const bucket = gc.bucket('pyro-uploads');
  *   "originalname" and "buffer" as keys
  */
  const uploadFile = (file, name, uid, type) => new Promise((resolve, reject) => {
-  const fileName = generateRandomName() + path.parse(name).ext;
   let blob;
     if (type == 'avatar') {
       console.log('avatar')
@@ -32,7 +31,7 @@ const bucket = gc.bucket('pyro-uploads');
     }
     if (type == 'userUpload') {
       console.log('userUpload')
-      blob = bucket.file(`userUploads/${uid}/${fileName}`)
+      blob = bucket.file(`userUploads/${uid}/${generateRandomName() + path.parse(name).ext}`)
     }
 
   const blobStream = blob.createWriteStream({

@@ -34,10 +34,10 @@ app.post('/upload', async (req, res) => {
     res.status(418).json({
         success: false,
         message: error.message
-    })
+    });
   }
 });
 
-app.listen(80, () => {
-  console.log('Uploader listning on port 80')
+app.listen(8080, () => {
+  console.log('Uploader listning on port 8080')
 });

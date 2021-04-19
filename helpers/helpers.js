@@ -1,10 +1,15 @@
-const path = require('path')
-const gc = require('../config')
-const bucket = gc.bucket('pyro-uploads') // should be your bucket name
+const gc = require('../config');
+const path = require('path');
+const bucket = gc.bucket('pyro-uploads');
 
-var genFileName = function () {
-    return Math.random().toString(36).substr(2, 9);
-  };
+/**
+ * 
+ * @returns 
+ */
+ function generateRandomName() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
 
 /**
  *
@@ -14,26 +19,22 @@ var genFileName = function () {
  * - It accepts an object as an argument with the
  *   "originalname" and "buffer" as keys
  */
-const uploadImage = (file, userid) => new Promise((resolve, reject) => {
-  const { originalname, buffer } = file
+ const uploadFile = (file, name, uid) => new Promise((resolve, reject) => {
+  const fileName = generateRandomName() + path.parse(name).ext;
 
-  let filename = genFileName() + path.parse(originalname).ext
-
-  const blob = bucket.file(`${userid}/${filename}`)
+  const blob = bucket.file(`${uid}/${fileName}`);
   const blobStream = blob.createWriteStream({
     resumable: false,
     gzip: true
-    
-  })
+  });
+
   blobStream.on('finish', () => {
-    const rawPublicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-    const publicUrl = `https://cdn.pyrochat.app/${blob.name}`
-    resolve({rawUrl: rawPublicUrl, url: publicUrl})
+    resolve(`https://cdn.pyrochat.app/${blob.name}`);
   })
   .on('error', () => {
-    reject(`Unable to upload image, something went wrong`)
+    reject(`Unable to upload image, something went wrong`);
   })
-  .end(buffer)
-})
+  .end(file)
+});
 
-module.exports = uploadImage
+module.exports = uploadFile;

@@ -19,10 +19,22 @@ const bucket = gc.bucket('pyro-uploads');
  * - It accepts an object as an argument with the
  *   "originalname" and "buffer" as keys
  */
- const uploadFile = (file, name, uid) => new Promise((resolve, reject) => {
+ const uploadFile = (file, name, uid, type) => new Promise((resolve, reject) => {
   const fileName = generateRandomName() + path.parse(name).ext;
+  let blob;
+    if (type == 'avatar') {
+      console.log('avatar')
+      if (path.parse(name).ext == '.png' | path.parse(name).ext == '.gif') {
+        blob = bucket.file(`avatar/${uid + path.parse(name).ext}`)
+      } else {
+        throw 'Avatar must be of type png or type gif'
+      }
+    }
+    if (type == 'userUpload') {
+      console.log('userUpload')
+      blob = bucket.file(`userUploads/${uid}/${fileName}`)
+    }
 
-  const blob = bucket.file(`${uid}/${fileName}`);
   const blobStream = blob.createWriteStream({
     resumable: false,
     gzip: true

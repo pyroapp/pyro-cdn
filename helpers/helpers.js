@@ -2,50 +2,40 @@ const gc = require('../config');
 const path = require('path');
 const bucket = gc.bucket('pyro-uploads');
 
-/**
- * 
- * @returns 
- */
  function generateRandomName() {
   return Math.random().toString(36).substr(2, 9);
 }
 
-
-/**
- *
- * @param { File } object file object that will be uploaded
- * @description - This function does the following
- * - It uploads a file to the image bucket on Google Cloud
- * - It accepts an object as an argument with the
- *   "originalname" and "buffer" as keys
- */
- const uploadFile = (file, name, uid, type) => new Promise((resolve, reject) => {
-  let blob;
+ const uploadFile = (uid, fileName, type, limit) => new Promise((resolve, reject) => {
+  try {
+    let file
     if (type == 'avatar') {
-      console.log('avatar')
-      if (path.parse(name).ext == '.png' | path.parse(name).ext == '.gif') {
-        blob = bucket.file(`avatar/${uid + path.parse(name).ext}`)
-      } else {
-        throw 'Avatar must be of type png or type gif'
+      file = bucket.file(`avatars/${uid + path.parse(fileName).ext}`);
+    } else {
+      file = bucket.file(`userUploads/${uid}/${generateRandomName() + path.parse(fileName).ext}`);
+    }
+
+    let oldDate = new Date()
+    let date = new Date(oldDate.getTime() + 5*60000);
+ 
+    const options = {
+      expires: date.toISOString(),
+      conditions: [
+        ['content-length-range', 0, limit * 1024 * 1024],
+      ],
+      fields: {
+        acl: 'public-read'
       }
-    }
-    if (type == 'userUpload') {
-      console.log('userUpload')
-      blob = bucket.file(`userUploads/${uid}/${generateRandomName() + path.parse(name).ext}`)
-    }
+    };
 
-  const blobStream = blob.createWriteStream({
-    resumable: false,
-    gzip: true
-  });
+    file.generateSignedPostPolicyV4(options).then(function(data) {
+      const response = data[0];
+      resolve(response)
 
-  blobStream.on('finish', () => {
-    resolve(`https://cdn.pyrochat.app/${blob.name}`);
-  })
-  .on('error', () => {
-    reject(`Unable to upload image, something went wrong`);
-  })
-  .end(file)
+});
+  } catch (err) {
+    reject(err)
+  }
 });
 
 module.exports = uploadFile;

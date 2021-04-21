@@ -1,0 +1,8 @@
+[
+    {
+      "origin": ["http://localhost:8000", "https://pyrochat.app", "https://staging.pyrochat.app"],
+      "method": ["POST"], 
+      "responseHeader": ["multipart/form-data"],
+      "maxAgeSeconds": 3600
+    }
+]

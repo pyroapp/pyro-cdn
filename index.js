@@ -9,8 +9,10 @@ app.use(cors());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
-app.post('/cdn', async (req, res) => {
+app.post('/cdn', async (req, res) => {	
 	try {
+			// TODO: Cross check UID of user making request with that of firebase auth
+
 			const ember = req.body.ember == 'true';
 			const limit = ember ? 100 : 50;
 			const { uid, file, type } = req.body;

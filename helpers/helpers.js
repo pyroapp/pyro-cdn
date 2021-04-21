@@ -16,13 +16,14 @@ const uploadFile = (uid, fileName, type, limit) => new Promise(async (resolve, r
 		const oldDate = new Date();
 		const date = new Date(oldDate.getTime() + 5 * 60000); // 5 minute expiration
 	
+		// Set policy document
 		const options = {
 			expires: date.toISOString(),
 			conditions: [
 				['content-length-range', 0, limit * 1024 * 1024], // Sets limit for file upload
 			],
 			fields: {
-				acl: 'public-read'
+				acl: 'public-read' // Access Control Level
 			}
 		};
 

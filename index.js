@@ -9,7 +9,7 @@ app.use(cors());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
-app.post('', async (req, res) => {	
+app.post('/', async (req, res) => {	
 	try {
 			// TODO: Cross check UID of user making request with that of firebase auth
 
